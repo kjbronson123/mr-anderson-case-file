@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Case File 024557 — Mr. Anderson</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --teal-deep:#173C3E;
+    --teal-mid:#2A5D5F;
+    --mint:#EDF3F0;
+    --paper:#FBFAF6;
+    --ink:#1C2B2B;
+    --amber:#C98A2C;
+    --alert:#A8402F;
+    --ok:#2C7A4B;
+    --line:#D8D2C2;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-padding-top:env(safe-area-inset-top,0px);}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:var(--mint);
+    color:var(--ink);
+    font-family:'IBM Plex Sans',sans-serif;
+    line-height:1.5;
+  }
+  .masthead{
+    background:var(--teal-deep);
+    color:var(--paper);
+    padding:22px 20px 18px;
+    position:sticky; top:0; z-index:20;
+    padding-top:calc(22px + env(safe-area-inset-top,0px));
+    border-bottom:3px solid var(--amber);
+  }
+  .masthead-row{
+    display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+    max-width:760px; margin:0 auto;
+  }
+  .case-id{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px; letter-spacing:.03em;
+    color:#BFD6D2;
+  }
+  .masthead h1{
+    font-family:'Source Serif 4',serif;
+    font-weight:600;
+    font-size:clamp(22px,5vw,30px);
+    margin:4px 0 2px;
+  }
+  .masthead p{margin:0; color:#CFE0DD; font-size:14px;}
+  .stamp{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px; font-weight:600; letter-spacing:.06em;
+    color:var(--alert); border:2px solid var(--alert);
+    padding:3px 8px; border-radius:3px; transform:rotate(-3deg);
+    white-space:nowrap;
+  }
+  nav.tabs{
+    display:flex; gap:2px; max-width:760px; margin:14px auto 0; overflow-x:auto;
+    -ms-overflow-style:none; scrollbar-width:none;
+  }
+  nav.tabs::-webkit-scrollbar{display:none;}
+  nav.tabs button{
+    flex:0 0 auto;
+    background:transparent; border:none; border-bottom:3px solid transparent;
+    color:#9FC0BC; font-family:'IBM Plex Mono',monospace; font-size:12.5px;
+    padding:8px 10px; cursor:pointer; white-space:nowrap;
+  }
+  nav.tabs button.active{color:#fff; border-bottom-color:var(--amber);}
+  nav.tabs button.locked{color:#5C7876; cursor:not-allowed;}
+  nav.tabs button.locked::after{content:" 🔒"; font-size:10px;}
+  nav.tabs button.done::before{content:"✓ "; color:#8FD9AE;}
+
+  main{max-width:760px; margin:0 auto; padding:28px 20px 80px;}
+  section.paper{
+    display:none;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:2px;
+    padding:26px 24px 30px;
+    box-shadow:0 1px 0 var(--line);
+  }
+  section.paper.active{display:block;}
+  .paper-label{
+    font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.04em;
+    color:var(--teal-mid); margin-bottom:6px;
+  }
+  h2{
+    font-family:'Source Serif 4',serif; font-weight:600;
+    font-size:24px; margin:0 0 14px; color:var(--teal-deep);
+  }
+  h3{
+    font-family:'Source Serif 4',serif; font-weight:600;
+    font-size:17px; margin:26px 0 8px; color:var(--teal-deep);
+  }
+  p{max-width:64ch;}
+  ul{max-width:64ch; padding-left:20px;}
+  li{margin-bottom:6px;}
+  .fact-box{
+    background:var(--mint); border-left:3px solid var(--teal-mid);
+    padding:12px 16px; margin:16px 0; max-width:60ch; font-size:15px;
+  }
+  label.q-label{display:block; font-weight:600; margin:18px 0 6px; font-size:15px;}
+  textarea{
+    width:100%; max-width:60ch; min-height:80px; font-family:'IBM Plex Sans',sans-serif;
+    font-size:14.5px; padding:10px 12px; border:1px solid var(--line); border-radius:4px;
+    background:#fff; color:var(--ink); resize:vertical;
+  }
+  textarea:focus, input:focus, select:focus{outline:2px solid var(--teal-mid); outline-offset:1px;}
+  input[type=text], input[type=number], select{
+    font-family:'IBM Plex Sans',sans-serif; font-size:14.5px; padding:8px 10px;
+    border:1px solid var(--line); border-radius:4px; background:#fff; color:var(--ink);
+  }
+  .names-row{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:6px;}
+  .names-row input{flex:1 1 150px;}
+
+  table.decay{
+    width:100%; border-collapse:collapse; margin:14px 0; font-size:14.5px;
+    max-width:60ch;
+  }
+  table.decay th, table.decay td{
+    border:1px solid var(--line); padding:8px 10px; text-align:center;
+  }
+  table.decay th{background:var(--teal-deep); color:#fff; font-weight:500; font-size:13px;}
+  table.decay td.given{background:var(--mint); font-family:'IBM Plex Mono',monospace;}
+  table.decay input{width:78px; text-align:center;}
+  td.status{font-size:13px; width:26px;}
+  .ok{color:var(--ok);} .no{color:var(--alert);}
+
+  .hints{font-size:13.5px; color:var(--teal-mid); background:var(--mint); padding:10px 14px; border-radius:4px; max-width:60ch; margin-top:8px;}
+  .chart-wrap{max-width:640px; margin:18px 0 6px; background:#fff; border:1px solid var(--line); border-radius:4px; padding:14px;}
+  .chart-wrap canvas{max-height:280px;}
+
+  button.action{
+    font-family:'IBM Plex Sans',sans-serif; font-weight:600; font-size:14px;
+    background:var(--teal-deep); color:#fff; border:none; border-radius:4px;
+    padding:9px 16px; cursor:pointer; margin:14px 8px 0 0;
+  }
+  button.action:hover{background:var(--teal-mid);}
+  button.action:disabled{background:#B9C4C1; cursor:not-allowed;}
+  button.ghost{
+    background:transparent; color:var(--teal-deep); border:1px solid var(--teal-deep);
+  }
+  button.ghost:disabled{color:#9AAAA7; border-color:#C7D0CD; background:transparent;}
+
+  .gate-msg{font-size:13px; color:var(--alert); margin-top:8px; min-height:16px;}
+  .gate-msg.ok{color:var(--ok);}
+
+  .analysis-q{margin-bottom:20px; max-width:64ch;}
+  .analysis-q .prompt{font-weight:600; margin-bottom:6px;}
+  .analysis-q input{width:140px;}
+
+  .nav-btns{display:flex; justify-content:space-between; align-items:center; margin-top:26px; flex-wrap:wrap; gap:8px;}
+  footer.savebar{
+    position:fixed; bottom:0; left:0; right:0; background:var(--teal-deep); color:#CFE0DD;
+    font-family:'IBM Plex Mono',monospace; font-size:11.5px; text-align:center;
+    padding:7px 10px calc(7px + env(safe-area-inset-bottom,0px));
+    z-index:20;
+  }
+  .summary-table{width:100%; border-collapse:collapse; margin:12px 0 22px; font-size:14px;}
+  .summary-table th{text-align:left; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.03em; color:var(--teal-mid); padding:6px 8px 4px; border-bottom:1px solid var(--line);}
+  .summary-table td{padding:6px 8px; border-bottom:1px solid var(--line); vertical-align:top;}
+  .summary-table td.mark{width:24px; text-align:center;}
+  .status-banner{padding:12px 16px; border-radius:4px; margin-bottom:18px; font-weight:600; font-size:15px;}
+  .status-banner.complete{background:#DCEFE1; color:var(--ok);}
+  .status-banner.incomplete{background:#F6E4D8; color:var(--alert);}
+
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --mint:#16211F; --paper:#1B2724; --ink:#E7EEEA; --line:#33423E;
+    }
+    body{background:var(--mint);}
+    table.decay td.given{background:#20302B;}
+    .fact-box, .hints{background:#20302B;}
+    input[type=text], input[type=number], textarea, select{background:#12201C; color:var(--ink); border-color:var(--line);}
+    .status-banner.complete{background:#193226; color:#8FD9AE;}
+    .status-banner.incomplete{background:#3A2A20; color:#E3A78C;}
+  }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="masthead-row">
+    <div>
+      <div class="case-id">CASE FILE 024557 · RADIATION RESEARCH LABS</div>
+      <h1>The Case of Mr. Anderson</h1>
+      <p>Radioactive isotopes &amp; half-life — a medical case study</p>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+      <div class="stamp">CONFIDENTIAL</div>
+      <div id="shift-clock" style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#CFE0DD;">
+        <button id="start-shift" class="action ghost" style="margin:0;padding:5px 10px;font-size:12px;color:#fff;border-color:#5C7876;">Start 70-min shift ▶</button>
+      </div>
+    </div>
+  </div>
+  <nav class="tabs" id="tabs">
+    <button data-tab="names" class="active">Team</button>
+    <button data-tab="case1">Case 1</button>
+    <button data-tab="case2" class="locked" disabled>Case 2</button>
+    <button data-tab="case3" class="locked" disabled>Case 3</button>
+    <button data-tab="case4" class="locked" disabled>Case 4</button>
+    <button data-tab="letter" class="locked" disabled>Letter</button>
+    <button data-tab="summary" class="locked" disabled>Submit</button>
+  </nav>
+</div>
+
+<main>
+
+  <section class="paper active" data-tab="names">
+    <div class="paper-label">MEDICAL CASE WORKER</div>
+    <h2>Your name</h2>
+    <p>Type your name below. Your work saves automatically on this device as you go. Each case unlocks the next once your table or answers are correct — so work through them in order.</p>
+    <div class="names-row">
+      <input type="text" placeholder="Your name" class="team-name">
+    </div>
+    <button class="action ghost" id="reset-btn">Reset all my answers</button>
+    <p style="font-size:13px;color:var(--teal-mid);margin-top:22px;">Work through the tabs in order: Case 1 → Case 2 → Case 3 → Case 4 → Letter → Submit.</p>
+  </section>
+
+  <section class="paper" data-tab="case1">
+    <div class="paper-label">CASE PAPER 1 · SUGGESTED TIME ~10 MIN</div>
+    <h2>The Mystery of Mr. Anderson's Condition</h2>
+    <p>You and your medical team have just received an urgent case. Mr. Anderson, a 45-year-old patient, has been diagnosed with thyroid cancer. The doctors at Radiation Research Labs have decided to treat him with a radioactive isotope called Iodine-131. It's your job to understand how this isotope will affect his body over time.</p>
+
+    <h3>Radioactive isotopes</h3>
+    <ul>
+      <li>Some elements have unstable isotopes that lose energy over time. This process, known as <strong>radioactive decay</strong>, releases radiation that can be used to treat diseases.</li>
+      <li>In Mr. Anderson's case, Iodine-131 will target his thyroid and help destroy cancer cells.</li>
+    </ul>
+
+    <h3>What is half-life?</h3>
+    <ul>
+      <li>Every radioactive isotope decays at a specific rate, measured by its <strong>half-life</strong> — the time it takes for half of the substance to lose its radioactivity.</li>
+      <li>For Iodine-131, the half-life is 8 days, meaning half of the radioactive material will be gone in 8 days, and half of what's left will disappear after another 8 days.</li>
+    </ul>
+
+    <div class="fact-box"><strong>Iodine-131</strong><br>Used for: targeting thyroid cancer, since iodine is absorbed by the thyroid gland.<br>Half-life: 8 days.</div>
+
+    <label class="q-label">Comprehension check: What is the half-life of Iodine-131, and why is this information important for tracking Mr. Anderson's treatment?</label>
+    <textarea data-key="c1-answer" placeholder="Type your team's answer here..."></textarea>
+
+    <div class="nav-btns">
+      <span></span>
+      <button class="action" data-goto="case2" data-gate="case1" disabled>Unlock Case 2 →</button>
+    </div>
+    <div class="gate-msg" data-gate-msg="case1">Write a full answer to unlock Case 2.</div>
+  </section>
+
+  <section class="paper" data-tab="case2">
+    <div class="paper-label">CASE PAPER 2 · PART 1 · SUGGESTED TIME ~15 MIN</div>
+    <h2>Tracking the Decay of Iodine-131</h2>
+    <p>Mr. Anderson has been given a dose of <strong>150 MBq</strong> of Iodine-131 on Day 0. Another team already filled in the first few rows. Finish the table — each value is half of the one 8 days before it.</p>
+
+    <table class="decay" id="i131-table">
+      <thead><tr><th>Day since treatment</th><th>Remaining radioactivity (MBq)</th><th></th></tr></thead>
+      <tbody>
+        <tr><td class="given">0</td><td class="given">150</td><td></td></tr>
+        <tr><td class="given">8</td><td class="given">75</td><td></td></tr>
+        <tr><td class="given">16</td><td class="given">37.5</td><td></td></tr>
+        <tr><td class="given">24</td><td class="given">18.75</td><td></td></tr>
+        <tr><td>32</td><td><input type="number" step="any" data-key="i131-32"></td><td class="status" data-check="i131-32" data-correct="9.375"></td></tr>
+        <tr><td>40</td><td><input type="number" step="any" data-key="i131-40"></td><td class="status" data-check="i131-40" data-correct="4.6875"></td></tr>
+        <tr><td>48</td><td><input type="number" step="any" data-key="i131-48"></td><td class="status" data-check="i131-48" data-correct="2.34375"></td></tr>
+      </tbody>
+    </table>
+
+    <div class="hints">
+      <strong>Step-by-step:</strong><br>
+      1. Day 32 = Day 24 value ÷ 2 → 18.75 ÷ 2 = ?<br>
+      2. Day 40 = Day 32 answer ÷ 2<br>
+      3. Day 48 = Day 40 answer ÷ 2
+    </div>
+
+    <button class="action ghost" id="check-i131">Check my table</button>
+
+    <h3>Graph it</h3>
+    <p>The graph below updates automatically from the numbers in your table — no graph paper needed. Give it a title once it looks right.</p>
+    <input type="text" id="i131-title" placeholder="Title your graph..." style="width:100%;max-width:400px;margin-bottom:10px;">
+    <div class="chart-wrap"><canvas id="chart-i131"></canvas></div>
+
+    <div class="nav-btns">
+      <button class="action ghost" data-goto="case1">← Back</button>
+      <button class="action" data-goto="case3" data-gate="case2" disabled>Unlock Case 3 →</button>
+    </div>
+    <div class="gate-msg" data-gate-msg="case2">All three table values must be correct to unlock Case 3.</div>
+  </section>
+
+  <section class="paper" data-tab="case3">
+    <div class="paper-label">CASE PAPER 3 · PART 2 · SUGGESTED TIME ~12 MIN</div>
+    <h2>A New Isotope: Technetium-99m</h2>
+    <p>Doctors are also using <strong>Technetium-99m</strong> to scan Mr. Anderson's thyroid. It has a much shorter half-life — ideal for imaging without lingering radiation.</p>
+    <div class="fact-box"><strong>Technetium-99m</strong><br>Used for: medical scans to visualize the thyroid.<br>Half-life: 6 hours.</div>
+
+    <table class="decay" id="tc99-table">
+      <thead><tr><th>Hours since scan</th><th>Remaining radioactivity (MBq)</th><th></th></tr></thead>
+      <tbody>
+        <tr><td class="given">0</td><td class="given">200</td><td></td></tr>
+        <tr><td class="given">6</td><td class="given">100</td><td></td></tr>
+        <tr><td>12</td><td><input type="number" step="any" data-key="tc99-12"></td><td class="status" data-check="tc99-12" data-correct="50"></td></tr>
+        <tr><td>18</td><td><input type="number" step="any" data-key="tc99-18"></td><td class="status" data-check="tc99-18" data-correct="25"></td></tr>
+        <tr><td>24</td><td><input type="number" step="any" data-key="tc99-24"></td><td class="status" data-check="tc99-24" data-correct="12.5"></td></tr>
+        <tr><td>30</td><td><input type="number" step="any" data-key="tc99-30"></td><td class="status" data-check="tc99-30" data-correct="6.25"></td></tr>
+        <tr><td>36</td><td><input type="number" step="any" data-key="tc99-36"></td><td class="status" data-check="tc99-36" data-correct="3.125"></td></tr>
+      </tbody>
+    </table>
+
+    <button class="action ghost" id="check-tc99">Check my table</button>
+
+    <h3>Graph it</h3>
+    <input type="text" id="tc99-title" placeholder="Title your graph..." style="width:100%;max-width:400px;margin-bottom:10px;">
+    <div class="chart-wrap"><canvas id="chart-tc99"></canvas></div>
+
+    <div class="nav-btns">
+      <button class="action ghost" data-goto="case2">← Back</button>
+      <button class="action" data-goto="case4" data-gate="case3" disabled>Unlock Case 4 →</button>
+    </div>
+    <div class="gate-msg" data-gate-msg="case3">All five table values must be correct to unlock Case 4.</div>
+  </section>
+
+  <section class="paper" data-tab="case4">
+    <div class="paper-label">CASE PAPER 4 · PART 3 · SUGGESTED TIME ~15 MIN</div>
+    <h2>Making Critical Medical Decisions</h2>
+    <p>Use your two graphs to answer these questions about Mr. Anderson's recovery. Nothing here is graded automatically as right or wrong until you submit — think it through with your team.</p>
+
+    <div class="analysis-q">
+      <div class="prompt">1. Physical therapy needs Iodine-131 below 20 MBq. What is his level on Day 28? Is he ready?</div>
+      <input type="number" step="any" data-key="q1-level" placeholder="MBq"> MBq &nbsp;
+      <select data-key="q1-ready"><option value="">Ready?</option><option>YES</option><option>NO</option></select>
+    </div>
+
+    <div class="analysis-q">
+      <div class="prompt">2. Mr. Anderson develops a fever around Day 40. How much Iodine-131 radiation remains at Day 40?</div>
+      <input type="number" step="any" data-key="q2-level" placeholder="MBq"> MBq
+    </div>
+
+    <div class="analysis-q">
+      <div class="prompt">3. A new Iodine-131 treatment needs levels below 5 MBq. On which day is that first true?</div>
+      Day <input type="number" data-key="q3-day" placeholder="day">
+    </div>
+
+    <div class="analysis-q">
+      <div class="prompt">4. How long until Technetium-99m falls below 25 MBq? Why is it better suited for imaging than Iodine-131?</div>
+      <input type="number" data-key="q4-hours" placeholder="hours"> hours<br>
+      <textarea data-key="q4-why" placeholder="Why Technetium-99m is better for imaging..." style="margin-top:8px;"></textarea>
+    </div>
+
+    <div class="analysis-q">
+      <div class="prompt">5. When will Iodine-131 fall below 1 MBq (safe for discharge)? If he later needs another 15 MBq dose, how long should the hospital wait (until below 5 MBq again)?</div>
+      Discharge on Day <input type="number" data-key="q5-discharge" placeholder="day"><br>
+      Wait until Day <input type="number" data-key="q5-wait" placeholder="day" style="margin-top:8px;">
+    </div>
+
+    <button class="action ghost" id="check-case4">Check my answers</button>
+
+    <div class="nav-btns">
+      <button class="action ghost" data-goto="case3">← Back</button>
+      <button class="action" data-goto="letter" data-gate="case4" disabled>Unlock Letter →</button>
+    </div>
+    <div class="gate-msg" data-gate-msg="case4">All five questions must be correct to unlock the letter.</div>
+  </section>
+
+  <section class="paper" data-tab="letter">
+    <div class="paper-label">FINAL STEP · SUGGESTED TIME ~10 MIN</div>
+    <h2>Letter to Mr. Anderson</h2>
+    <p>Write a short letter explaining his treatment and recovery — how long he should continue recovering, any follow-up treatment, and when he can return to normal activities. Professional but friendly.</p>
+    <textarea data-key="letter-body" style="min-height:220px;" placeholder="Dear Mr. Anderson,&#10;&#10;..."></textarea>
+    <label class="q-label">Sign your name</label>
+    <input type="text" data-key="letter-signature" style="width:100%;max-width:400px;" placeholder="Your name">
+    <div class="nav-btns">
+      <button class="action ghost" data-goto="case4">← Back</button>
+      <button class="action" data-goto="summary" data-gate="letter" disabled>Finish → Submit</button>
+    </div>
+    <div class="gate-msg" data-gate-msg="letter">Write your letter and sign your name to continue.</div>
+  </section>
+
+  <section class="paper" data-tab="summary">
+    <div class="paper-label">COMPLETION RECORD</div>
+    <h2>Proof of completion</h2>
+    <div id="status-banner" class="status-banner incomplete">Checking completion status…</div>
+    <p>This is your full record. Download it and turn it in as proof of accurate completion.</p>
+    <table class="summary-table" id="summary-table"></table>
+    <button class="action" id="download-btn">Download completion summary</button>
+    <button class="action ghost" data-goto="letter">← Back to letter</button>
+  </section>
+
+</main>
+
+<footer class="savebar" id="savebar">Answers save automatically on this device</footer>
+
+<script>
+(function(){
+  var STORAGE_KEY = 'mranderson-case-file-v2';
+  var state = {};
+  try {
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) state = JSON.parse(raw) || {};
+  } catch(e) { state = {}; }
+
+  function save(){
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+    catch(e) { document.getElementById('savebar').textContent = 'Could not save on this device — copy your answers before closing.'; }
+  }
+
+  document.querySelectorAll('.team-name').forEach(function(el, i){
+    var k = 'team-name-' + i;
+    if (state[k]) el.value = state[k];
+    el.addEventListener('input', function(){ state[k] = el.value; save(); });
+  });
+
+  document.querySelectorAll('[data-key]').forEach(function(el){
+    var k = el.getAttribute('data-key');
+    if (state[k] !== undefined) el.value = state[k];
+    el.addEventListener('input', function(){ state[k] = el.value; save(); updateCharts(); updateGates(); });
+    el.addEventListener('change', function(){ state[k] = el.value; save(); updateGates(); });
+  });
+
+  ['i131-title','tc99-title'].forEach(function(id){
+    var el = document.getElementById(id);
+    if (state[id]) el.value = state[id];
+    el.addEventListener('input', function(){ state[id] = el.value; save(); updateCharts(); });
+  });
+
+  // ---- correctness helpers ----
+  var CORRECT = {
+    'i131-32': 9.375, 'i131-40': 4.6875, 'i131-48': 2.34375,
+    'tc99-12': 50, 'tc99-18': 25, 'tc99-24': 12.5, 'tc99-30': 6.25, 'tc99-36': 3.125
+  };
+  function valOf(key){ return parseFloat((document.querySelector('[data-key="'+key+'"]')||{}).value); }
+  function isClose(key, tol){
+    var v = valOf(key);
+    if (isNaN(v)) return false;
+    return Math.abs(v - CORRECT[key]) < (tol || 0.01);
+  }
+  function checkTable(prefix){
+    var allCorrect = true;
+    document.querySelectorAll('[data-check]').forEach(function(cell){
+      var key = cell.getAttribute('data-check');
+      if (key.indexOf(prefix) !== 0) return;
+      var v = valOf(key);
+      if (isNaN(v)) { cell.textContent=''; allCorrect = false; return; }
+      if (isClose(key)) { cell.textContent = '✓'; cell.className = 'status ok'; }
+      else { cell.textContent = '✗'; cell.className = 'status no'; allCorrect = false; }
+    });
+    return allCorrect;
+  }
+  document.getElementById('check-i131').addEventListener('click', function(){ checkTable('i131'); updateGates(); });
+  document.getElementById('check-tc99').addEventListener('click', function(){ checkTable('tc99'); updateGates(); });
+
+  var CASE4_ANSWERS = { 'q1-level':13.26, 'q3-day':40, 'q4-hours':24, 'q5-discharge':64, 'q5-wait':16 };
+  var CASE4_TOL = { 'q1-level':3.5, 'q3-day':0.5, 'q4-hours':0.5, 'q5-discharge':0.5, 'q5-wait':0.5 };
+  function case4Correct(){
+    var okLevel = !isNaN(valOf('q1-level')) && Math.abs(valOf('q1-level') - CASE4_ANSWERS['q1-level']) < CASE4_TOL['q1-level'];
+    var okReady = (document.querySelector('[data-key="q1-ready"]').value === 'YES');
+    var okQ2 = !isNaN(valOf('q2-level')) && Math.abs(valOf('q2-level') - 4.6875) < 0.1;
+    var okQ3 = !isNaN(valOf('q3-day')) && Math.abs(valOf('q3-day') - CASE4_ANSWERS['q3-day']) < CASE4_TOL['q3-day'];
+    var okQ4h = !isNaN(valOf('q4-hours')) && Math.abs(valOf('q4-hours') - CASE4_ANSWERS['q4-hours']) < CASE4_TOL['q4-hours'];
+    var okQ4why = (document.querySelector('[data-key="q4-why"]').value || '').trim().length > 15;
+    var okQ5a = !isNaN(valOf('q5-discharge')) && Math.abs(valOf('q5-discharge') - CASE4_ANSWERS['q5-discharge']) < CASE4_TOL['q5-discharge'];
+    var okQ5b = !isNaN(valOf('q5-wait')) && Math.abs(valOf('q5-wait') - CASE4_ANSWERS['q5-wait']) < CASE4_TOL['q5-wait'];
+    return okLevel && okReady && okQ2 && okQ3 && okQ4h && okQ4why && okQ5a && okQ5b;
+  }
+  document.getElementById('check-case4').addEventListener('click', function(){
+    var ok = case4Correct();
+    var msg = document.querySelector('[data-gate-msg="case4"]');
+    msg.textContent = ok ? 'All correct! Case 4 unlocked below.' : 'Not quite there yet — check your calculations against your two graphs and try again.';
+    msg.className = 'gate-msg' + (ok ? ' ok' : '');
+    updateGates();
+  });
+
+  // ---- gating ----
+  function tabButton(tab){ return document.querySelector('nav.tabs button[data-tab="'+tab+'"]'); }
+  function unlock(tab){
+    var b = tabButton(tab);
+    if (b) { b.disabled = false; b.classList.remove('locked'); }
+  }
+  function lock(tab){
+    var b = tabButton(tab);
+    if (b) { b.disabled = true; b.classList.add('locked'); }
+  }
+  function markDone(tab, done){
+    var b = tabButton(tab);
+    if (b) b.classList.toggle('done', !!done);
+  }
+  function updateGates(){
+    var c1ok = (document.querySelector('[data-key="c1-answer"]').value || '').trim().length > 10;
+    var c2ok = isClose('i131-32') && isClose('i131-40') && isClose('i131-48');
+    var c3ok = isClose('tc99-12') && isClose('tc99-18') && isClose('tc99-24') && isClose('tc99-30') && isClose('tc99-36');
+    var c4ok = case4Correct();
+    var letterOk = (document.querySelector('[data-key="letter-body"]').value || '').trim().length > 50 &&
+                   (document.querySelector('[data-key="letter-signature"]').value || '').trim().length > 0;
+
+    setGateButton('case1', c1ok); markDone('case1', c1ok); if (c1ok) unlock('case2'); else lock('case2');
+    setGateButton('case2', c2ok); markDone('case2', c2ok); if (c2ok) unlock('case3'); else lock('case3');
+    setGateButton('case3', c3ok); markDone('case3', c3ok); if (c3ok) unlock('case4'); else lock('case4');
+    setGateButton('case4', c4ok); markDone('case4', c4ok); if (c4ok) unlock('letter'); else lock('letter');
+    setGateButton('letter', letterOk); markDone('letter', letterOk); if (letterOk) unlock('summary'); else lock('summary');
+
+    return { c1ok:c1ok, c2ok:c2ok, c3ok:c3ok, c4ok:c4ok, letterOk:letterOk };
+  }
+  function setGateButton(tab, ok){
+    var btn = document.querySelector('[data-gate="'+tab+'"]');
+    if (btn) btn.disabled = !ok;
+  }
+
+  // tabs
+  var tabs = document.querySelectorAll('nav.tabs button');
+  var papers = document.querySelectorAll('section.paper');
+  function goto(tab){
+    tabs.forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-tab') === tab); });
+    papers.forEach(function(p){ p.classList.toggle('active', p.getAttribute('data-tab') === tab); });
+    window.scrollTo({top:0, behavior:'instant'});
+    if (tab === 'case2' || tab === 'case3') setTimeout(updateCharts, 30);
+    if (tab === 'summary') renderSummary();
+  }
+  tabs.forEach(function(b){ b.addEventListener('click', function(){ if (!b.disabled) goto(b.getAttribute('data-tab')); }); });
+  document.querySelectorAll('[data-goto]').forEach(function(b){
+    b.addEventListener('click', function(){ if (!b.disabled) goto(b.getAttribute('data-goto')); });
+  });
+
+  // reset
+  document.getElementById('reset-btn').addEventListener('click', function(){
+    if (!confirm('Clear all saved answers on this device?')) return;
+    state = {};
+    try { localStorage.removeItem(STORAGE_KEY); } catch(e){}
+    location.reload();
+  });
+
+  // charts
+  var chartI131, chartTc99;
+  function num(key, fallback){
+    var v = parseFloat((document.querySelector('[data-key="'+key+'"]')||{}).value);
+    return isNaN(v) ? fallback : v;
+  }
+  function buildChart(canvasId, labels, points, titleInputId, axisLabel){
+    var ctx = document.getElementById(canvasId).getContext('2d');
+    var title = document.getElementById(titleInputId).value || 'Untitled graph';
+    return new Chart(ctx, {
+      type: 'line',
+      data: { labels: labels, datasets: [{ label: 'Remaining radioactivity (MBq)', data: points, borderColor: '#173C3E', backgroundColor:'rgba(23,60,62,0.12)', tension:0.15, spanGaps:false, pointRadius:4 }] },
+      options: {
+        responsive:true,
+        plugins:{ title:{ display:true, text:title, font:{size:14} }, legend:{ display:false } },
+        scales:{
+          x:{ title:{ display:true, text: axisLabel } },
+          y:{ title:{ display:true, text:'Radioactivity (MBq)' }, beginAtZero:true }
+        }
+      }
+    });
+  }
+  function updateCharts(){
+    var i131pts = [150,75,37.5,18.75, num('i131-32', null), num('i131-40', null), num('i131-48', null)];
+    var tc99pts = [200,100, num('tc99-12', null), num('tc99-18', null), num('tc99-24', null), num('tc99-30', null), num('tc99-36', null)];
+    if (chartI131) chartI131.destroy();
+    if (chartTc99) chartTc99.destroy();
+    chartI131 = buildChart('chart-i131', [0,8,16,24,32,40,48], i131pts, 'i131-title', 'Days since treatment');
+    chartTc99 = buildChart('chart-tc99', [0,6,12,18,24,30,36], tc99pts, 'tc99-title', 'Hours since scan');
+  }
+
+  // ---- summary / submission ----
+  function teamNames(){
+    return Array.from(document.querySelectorAll('.team-name')).map(function(el){ return el.value.trim(); }).filter(Boolean);
+  }
+  function buildSummaryText(gates){
+    var lines = [];
+    lines.push('CASE FILE 024557 — MR. ANDERSON — COMPLETION RECORD');
+    lines.push('Name: ' + (teamNames().join(', ') || '(no name entered)'));
+    lines.push('Status: ' + (gates.letterOk && gates.c4ok && gates.c3ok && gates.c2ok && gates.c1ok ? 'COMPLETE — all sections correct' : 'INCOMPLETE'));
+    lines.push('');
+    lines.push('--- Case 1: Comprehension check ---');
+    lines.push(document.querySelector('[data-key="c1-answer"]').value || '(blank)');
+    lines.push('');
+    lines.push('--- Case 2: Iodine-131 decay table ---');
+    lines.push('Day 0: 150 | Day 8: 75 | Day 16: 37.5 | Day 24: 18.75');
+    lines.push('Day 32: ' + (document.querySelector('[data-key="i131-32"]').value || '?') +
+                ' | Day 40: ' + (document.querySelector('[data-key="i131-40"]').value || '?') +
+                ' | Day 48: ' + (document.querySelector('[data-key="i131-48"]').value || '?'));
+    lines.push('Graph title: ' + (document.getElementById('i131-title').value || '(untitled)'));
+    lines.push('');
+    lines.push('--- Case 3: Technetium-99m decay table ---');
+    lines.push('Hour 0: 200 | Hour 6: 100');
+    ['12','18','24','30','36'].forEach(function(h){
+      lines.push('Hour ' + h + ': ' + (document.querySelector('[data-key="tc99-'+h+'"]').value || '?'));
+    });
+    lines.push('Graph title: ' + (document.getElementById('tc99-title').value || '(untitled)'));
+    lines.push('');
+    lines.push('--- Case 4: Analysis ---');
+    lines.push('1. Day 28 level: ' + (document.querySelector('[data-key="q1-level"]').value||'?') + ' MBq — Ready for therapy: ' + (document.querySelector('[data-key="q1-ready"]').value||'?'));
+    lines.push('2. Day 40 level: ' + (document.querySelector('[data-key="q2-level"]').value||'?') + ' MBq');
+    lines.push('3. Safe new-treatment day: ' + (document.querySelector('[data-key="q3-day"]').value||'?'));
+    lines.push('4. Technetium below 25 MBq after: ' + (document.querySelector('[data-key="q4-hours"]').value||'?') + ' hours');
+    lines.push('   Why better for imaging: ' + (document.querySelector('[data-key="q4-why"]').value||'?'));
+    lines.push('5. Discharge day: ' + (document.querySelector('[data-key="q5-discharge"]').value||'?') + ' — Wait day for 15 MBq re-dose: ' + (document.querySelector('[data-key="q5-wait"]').value||'?'));
+    lines.push('');
+    lines.push('--- Letter to Mr. Anderson ---');
+    lines.push(document.querySelector('[data-key="letter-body"]').value || '(blank)');
+    lines.push('');
+    lines.push('Signed: ' + (document.querySelector('[data-key="letter-signature"]').value || '(unsigned)'));
+    lines.push('');
+    lines.push('Generated ' + new Date().toLocaleString());
+    return lines.join('\n');
+  }
+  function renderSummary(){
+    var gates = updateGates();
+    var allDone = gates.c1ok && gates.c2ok && gates.c3ok && gates.c4ok && gates.letterOk;
+    var banner = document.getElementById('status-banner');
+    banner.textContent = allDone ? '✓ Complete — every section is correct and finished.' : 'Not finished yet — go back and complete every locked section.';
+    banner.className = 'status-banner ' + (allDone ? 'complete' : 'incomplete');
+
+    var rows = [
+      ['Name', teamNames().join(', ') || '—'],
+      ['Case 1 answer', document.querySelector('[data-key="c1-answer"]').value || '—'],
+      ['Iodine-131 Day 32/40/48', [32,40,48].map(function(d){return document.querySelector('[data-key="i131-'+d+'"]').value||'?';}).join(' / ')],
+      ['Technetium-99m 12–36h', ['12','18','24','30','36'].map(function(h){return document.querySelector('[data-key="tc99-'+h+'"]').value||'?';}).join(' / ')],
+      ['Day 28 level / ready', (document.querySelector('[data-key="q1-level"]').value||'?') + ' MBq / ' + (document.querySelector('[data-key="q1-ready"]').value||'?')],
+      ['Day 40 level', (document.querySelector('[data-key="q2-level"]').value||'?') + ' MBq'],
+      ['Safe new-treatment day', document.querySelector('[data-key="q3-day"]').value||'?'],
+      ['Tc-99m below 25 MBq at', (document.querySelector('[data-key="q4-hours"]').value||'?') + ' hrs'],
+      ['Discharge day / re-dose wait', (document.querySelector('[data-key="q5-discharge"]').value||'?') + ' / ' + (document.querySelector('[data-key="q5-wait"]').value||'?')],
+      ['Letter signed by', document.querySelector('[data-key="letter-signature"]').value || '—']
+    ];
+    var table = document.getElementById('summary-table');
+    table.innerHTML = '<tr><th>Item</th><th>Recorded answer</th></tr>' + rows.map(function(r){
+      return '<tr><td>'+r[0]+'</td><td>'+ (r[1]+'').replace(/</g,'&lt;') +'</td></tr>';
+    }).join('');
+  }
+
+  var downloadsCap = null;
+  if (window.claude && window.claude.use) {
+    window.claude.use('downloads').then(function(d){ downloadsCap = d; }).catch(function(){ downloadsCap = null; });
+  }
+  document.getElementById('download-btn').addEventListener('click', function(){
+    var gates = updateGates();
+    var text = buildSummaryText(gates);
+    var teamPart = (teamNames()[0] || 'team').toLowerCase().replace(/[^a-z0-9]+/g,'-');
+    var filename = 'mr-anderson-summary-' + teamPart + '.txt';
+    if (downloadsCap && downloadsCap.save) {
+      downloadsCap.save({ filename: filename, data: text }).catch(function(){ fallbackDownload(text, filename); });
+    } else {
+      fallbackDownload(text, filename);
+    }
+  });
+  function fallbackDownload(text, filename){
+    try {
+      var blob = new Blob([text], {type:'text/plain'});
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch(e) {
+      alert('Could not download automatically. Copy this text instead:\n\n' + text);
+    }
+  }
+
+  // ---- 70-minute shift clock ----
+  var SHIFT_SECONDS = 70 * 60;
+  var shiftTimer = null;
+  function renderClock(remaining){
+    var m = Math.max(0, Math.floor(remaining / 60));
+    var s = Math.max(0, remaining % 60);
+    var el = document.getElementById('shift-clock');
+    var over = remaining <= 0;
+    el.innerHTML = '<span style="' + (over ? 'color:#E3A78C;' : '') + '">' +
+      (over ? 'Shift complete' : 'Shift ends in ' + m + ':' + (s<10?'0':'')+s) + '</span>';
+  }
+  function startShiftClock(){
+    var startAt = state['shift-start'] ? parseInt(state['shift-start'],10) : Date.now();
+    state['shift-start'] = String(startAt);
+    save();
+    if (shiftTimer) clearInterval(shiftTimer);
+    shiftTimer = setInterval(function(){
+      var elapsed = Math.floor((Date.now() - startAt) / 1000);
+      renderClock(SHIFT_SECONDS - elapsed);
+    }, 1000);
+    renderClock(SHIFT_SECONDS - Math.floor((Date.now() - startAt) / 1000));
+  }
+  if (state['shift-start']) {
+    startShiftClock();
+  } else {
+    document.getElementById('start-shift').addEventListener('click', function(){
+      document.getElementById('shift-clock').innerHTML = '';
+      startShiftClock();
+    });
+  }
+
+  updateCharts();
+  updateGates();
+})();
+</script>
+
+</body>
+</html>
